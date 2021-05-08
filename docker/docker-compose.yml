@@ -1,0 +1,26 @@
+version: "3"
+
+services:
+  app:
+    build: ./golang
+    container_name: go_app
+    volumes:
+      - ..:/var/www/html
+    restart: unless-stopped
+    ports:
+      - "7001:7070"
+    depends_on:
+      - db
+  db:
+    image: mariadb
+    container_name: go_db
+    volumes:
+      - dataBulk:/var/etc/mysql
+    ports:
+      - 3307:3306
+    environment:
+      MYSQL_DATABASE: goDb
+      MYSQL_ROOT_PASSWORD: 123456
+
+volumes:
+  dataBulk:
