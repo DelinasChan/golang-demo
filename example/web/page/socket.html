@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.socket.io/socket.io-1.4.6.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <title>Socket Test</title>
+</head>
+<body>
+    Web Socket...
+
+    <div>
+        <div class="tool-bar">
+            <input class="message" type="input" />
+            <a class="btn">送出訊息</a>
+        </div>
+        <div class="messages">
+            <h2>聊天內容</h2>
+            <div class="message-list">
+
+            </div>
+        </div>
+    </div>
+    <script>
+        
+        let url = new URL(window.location.href) ;
+        let config = {
+            query:{
+                room:url.searchParams.get('room'),
+                userId:url.searchParams.get('user')
+            },
+            reconnection:true,
+            transports: ['websocket']
+        }
+        var socket = io('/chat',config);
+
+        socket.on('joinRes',(payload)=>{
+            console.log('joinRes',payload)
+        })
+
+        socket.on('res',(result)=>{
+            console.log('reply result: ',result);
+            if(result.message)
+            {
+                let { message } = result ;
+                $(".message-list").append(`<p>${message}</p>`)
+            }
+        });
+
+        $('a.btn').click(function(){
+            let payload = {
+                message:$('input.message').val(),
+            }
+            // socket.emit('test',payload)
+            socket.emit('message',payload)
+
+        })
+    </script>
+
+</body>
+</html>
